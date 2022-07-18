@@ -1,0 +1,22 @@
+{
+  "name": "insomnia-plugin-jwt-auth-graphql",
+  "version": "1.0.0",
+  "insomnia": {
+    "name": "jwt-auth-token-graphql",
+    "description": "This plugin will auto set the bearer authorization header with a jwt token, after it receive from a login/register mutation."
+  },
+  "keywords": [
+    "insomnia",
+    "plugin",
+    "custom",
+    "bearer",
+    "jwt",
+    "token",
+    "graphql",
+    "authorization"
+  ],
+  "main": "main.js",
+  "dependencies": {
+    "lodash.get": "^4.4.2"
+  }
+}
