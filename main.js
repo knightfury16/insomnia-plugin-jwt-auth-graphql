@@ -63,11 +63,12 @@ module.exports.responseHooks = [
       // TODO: Make it dynamic, or at least give the control to the user
       const res = context.response.getBody().toString();
       const data = JSON.parse(res);
-      const [queryName] = Object.keys(data.data);
-      const token = _get(data['data'][queryName], tokenName, 'token');
-
-      await context.store.setItem('jwt', token);
-      console.log('Token Set', token);
+      if (data.data) {
+        const [queryName] = Object.keys(data.data);
+        const token = _get(data['data'][queryName], tokenName, 'token');
+        await context.store.setItem('jwt', token);
+        console.log('Token Set', token);
+      }
     }
   }
 ];
