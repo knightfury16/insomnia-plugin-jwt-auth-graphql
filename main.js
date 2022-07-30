@@ -3,27 +3,27 @@ const _get = require('lodash.get');
 module.exports.requestHooks = [
   async context => {
     // default unAuthenticatedOperation
-    const unAthenticated_operations = ['login', 'register', 'create'];
-    // custom unAuthenticated operations
+    // Not setting any default
+    const unAthenticated_operations = [];
 
+    // custom unAuthenticated operations
+    // if any opertion don't need the token, mention in environment explicitly
     const customUnAuthenticatedOperations = context.request.getEnvironmentVariable(
       'unathenticated_operations'
     );
 
     if (customUnAuthenticatedOperations) {
-      unAthenticated_operations = [
-        ...unAthenticated_operations,
-        ...customUnAuthenticatedOperations
-      ];
+      unAthenticated_operations = [...customUnAuthenticatedOperations];
     }
 
     // get the current operation name
     const req = JSON.parse(context.request.getBody().text);
     const operationName = req.operationName;
 
+    // cheking if this path need token or not based on the opertions name, if mentioned in environment
     const isNonAuthOperation = unAthenticated_operations.some(u => operationName.includes(u));
 
-    // do not set header authorization header when path is 'login' or 'register' or any custom unAuthenticated operations
+    // do not set header authorization header when path is any custom unAuthenticated operations
     if (!isNonAuthOperation) {
       const jwt = await context.store.getItem('jwt');
       context.request.addHeader('Authorization', `Bearer ${jwt}`);
@@ -52,9 +52,11 @@ module.exports.responseHooks = [
     const operationName = req.operationName;
 
     // check if the operation name contain the loginOperation name
-    const isLoginOperation = loginOperations.some(loginOperation =>
-      operationName.includes(loginOperation)
-    );
+    const isLoginOperation = loginOperations.some(loginOperation => {
+      return operationName.includes(loginOperation) && operationName.toLowerCase().includes('user');
+    });
+
+    console.log('IsloginOperation', isLoginOperation);
 
     // persistent jwt on the storage
     if (isLoginOperation) {
